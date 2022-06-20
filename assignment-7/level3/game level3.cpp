@@ -1,11 +1,17 @@
-#include <windows.h>
-#include <gl/Gl.h>
-#include <gl/glut.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <cmath>
 #include <string>
-#include <ctime>
+#define GL_SILENCE_DEPRECATION
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 
 using namespace std;
+
+
 
 int sh = 600, sw = 1000;
 
@@ -67,7 +73,7 @@ void relocateTray() { // set a random position of the tray
 }
 
 void checkPos() { //check whether the tray and lid are overlapping
-	if ((tc.x == lc.x) && (tc.y == lc.y)&&(tzoom==lzoom)&&((tang==lang)||(tang==90-lang))) {
+	if ((tc.x == lc.x) && (tc.y == lc.y)&&(tzoom==lzoom)&&((tang==lang))) {
 		score += 10;
 		relocateTray();
 	}

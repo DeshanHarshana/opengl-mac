@@ -85,17 +85,18 @@ void drawSquare(Point2D center, int ang, int zoom) {
 	p3.x = center.x + 10; 	p3.y = center.y + 10;
 	p4.x = center.x + 10; 	p4.y = center.y - 10;
 
+	//Rotate the points p1, p2, p3, and p4;
+	p1 = rotate_arb(p1, center, ang);
+	p2 = rotate_arb(p2, center, ang);
+	p3 = rotate_arb(p3, center, ang);
+	p4 = rotate_arb(p4, center, ang);
 	//Scale the points p1, p2, p3, and p4;
 	p1 = scale_arb(p1, center, zoom);
 	p2 = scale_arb(p2, center, zoom);
 	p3 = scale_arb(p3, center, zoom);
 	p4 = scale_arb(p4, center, zoom);
 
-	//Rotate the points p1, p2, p3, and p4;
-	p1 = rotate_arb(p1, center, ang);
-	p2 = rotate_arb(p2, center, ang);
-	p3 = rotate_arb(p3, center, ang);
-	p4 = rotate_arb(p4, center, ang);
+
 
 	printf("tray angle =%d,  lid angle=%d\n", tang, lang);
 
@@ -121,6 +122,7 @@ void drawGrid() { // You don't need to modify anything in this function
 	for (int y = 100; y < sw; y += 100) {
 		glVertex2i(0, y);
 		glVertex2i(sw, y);
+		
 	}
 
 	glEnd();
@@ -132,7 +134,7 @@ void printScore() // You don't need to modify anything in this function
 
 	glColor3f(0.0, 1.0, 0.0);
 	glRasterPos2f(10, 10);
-
+	
 	int len, i;
 	len = str.length();
 	for (i = 0; i < len; i++) {
@@ -165,16 +167,17 @@ void special(int key, int, int) {
 	case GLUT_KEY_LEFT:
 		if(lc.x>100){
 		lc = translate(lc, -10, 0);
-		lang =((lang - 10) % 90);
-		if (lang < 0) {
-			lang = lang +90;
-		}
+		lang = ((lang + 10) % 90);
+		
 		}
 		break;
 	case GLUT_KEY_RIGHT:
 		if(lc.x<sw-100){
 		lc = translate(lc, 10, 0);
-		lang = ((lang + 10) % 90);
+		lang =((lang - 10) % 90);
+		if (lang < 0) {
+			lang = lang +90;
+		}
 		}
 		break;
 	case GLUT_KEY_UP:
@@ -215,6 +218,10 @@ void keyboard(unsigned char key, int x, int y)
 		if (lang < 0) {
 			lang = lang +90;
 		}
+		//we use this part because -30 and 60 has same 
+		//view in squre shape 
+		//bt we need same value for check overlapping
+		//so we have to use this if clause
 		break;
 	case 'q':
 		exit(EXIT_SUCCESS);
@@ -228,6 +235,7 @@ void keyboard(unsigned char key, int x, int y)
 
 void mouse(int button, int state, int x, int y) {
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		
 
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {

@@ -1,0 +1,72 @@
+#include <gl/glut.h>
+#include <Windows.h>
+#include <iostream>
+using namespace std;
+
+
+void Triangle() {
+	glColor3f(1.0, 0.0, 0.0);
+	glPointSize(2.0);
+	/*create triangle*/
+	glBegin(GL_LINES);
+	glVertex2i(100, 100);
+	glVertex2i(300, 400);
+
+	glVertex2i(300, 400);
+	glVertex2i(450, 100);
+
+	glVertex2i(450, 100);
+	glVertex2i(100, 100);
+
+	
+	glEnd();
+	
+	/*filling*/
+
+	/*filling one half, plus slope*/
+	
+	float m1 = 1.5; //((400-100)/(300-100))
+	float end1 = ((400 - 100) / m1) + 100; //because start 100
+	float c1 = 100 - (m1 * 100);
+	printf("m : %f, c : %f, end : %f", m1, c1, end1);
+	glBegin(GL_LINES);
+	for (float i = 100; i <= 400; i++) {
+		glVertex2f((i - c1) / m1, i);
+		glVertex2f(end1, i);
+	}
+
+	/*filling second half*/
+
+	float m2 = -2; //((400-100) / (300-450))
+	float c2 = 100 - (m2 * 450);
+	printf("m : %f, c : %f, end : %f", m2, c2, end1);
+	glBegin(GL_LINES);
+	for (float i = 100; i <= 400; i++) {
+		glVertex2f(end1, i);
+		glVertex2f((i - c2) / m2, i);
+		
+	}
+	
+	glEnd();
+
+	glFlush();
+	
+}
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(600, 400);
+	glutInitWindowPosition(0, 0);
+	glutCreateWindow("Triangle Draw OpenGL");
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	gluOrtho2D(-500, 500, -500, 500);
+	glMatrixMode(GL_PROJECTION);
+	glViewport(0, 0, 500, 500);
+
+	glutDisplayFunc(Triangle);
+	glutMainLoop();
+	return 0;
+}

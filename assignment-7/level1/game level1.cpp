@@ -1,9 +1,13 @@
-#include <windows.h>
-#include <gl/Gl.h>
-#include <gl/glut.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <cmath>
 #include <string>
-#include <ctime>
+#define GL_SILENCE_DEPRECATION
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 
 using namespace std;
 
@@ -31,7 +35,10 @@ Point2D translate(Point2D p, float tx, float ty) {
 
 void relocateTray() { // set a random position of the tray
 	int rvx, rvy; //Random value
-	int min_x = 100, max_x = sw-100, interval_x = 100, range_x = max_x - min_x + 1;
+	int min_x = 100,
+	max_x = sw-100,
+	interval_x = 100,
+	range_x = max_x - min_x + 1;
 	int min_y = 100,max_y = sh-100, interval_y = 100, range_y = max_y - min_y + 1;
 	
 	rvx = min_x + (rand() % range_x) / interval_x * interval_x;

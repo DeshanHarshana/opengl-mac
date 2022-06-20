@@ -158,7 +158,7 @@ void keyboard(unsigned char key, int x, int y)
 
 void myMouse(int button, int state, int x, int y) {
 	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
-
+		
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 
