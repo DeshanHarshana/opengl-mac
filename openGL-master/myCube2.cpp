@@ -1,5 +1,13 @@
-#include <gl\glut.h>
+#include <math.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <cmath>
+#define GL_SILENCE_DEPRECATION
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 
 int WinWidth = 500, WinHeight = 500;
 

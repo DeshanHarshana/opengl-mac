@@ -24,6 +24,7 @@ Point2D tc, lc; //Center of the Tray and the Lid
 
 int tang, tzoom; //Tray's angle, and scale factor
 int lang, lzoom; //Lid's angle, and scale factor
+float sp, sl;
 
 Point2D translate(Point2D p, float tx, float ty) {
 	Point2D ptemp;
@@ -39,21 +40,26 @@ Point2D rotate_arb(Point2D p, Point2D piv, float ang) {
 	double as = sin(ang);
 	ptemp.x = (p.x * ac) - (p.y * as) - (piv.x * ac) + (piv.y * as) + piv.x;
 	ptemp.y = (p.x * as) + (p.y * ac) - (piv.x * as) - (piv.y * ac) + piv.y;
-
 	return ptemp;
 }
 
 Point2D scale_arb(Point2D p, Point2D piv, int sf) { // sf - scale factor
 	Point2D ptemp;
-
 	ptemp.x = (p.x * sf) + piv.x - (sf * piv.x);
 	ptemp.y = (p.y * sf) + piv.y - (sf * piv.y);
+	return ptemp;
+}
 
+Point2D Shearing(Point2D p, Point2D piv, float sp){
+	Point2D ptemp;
+	ptemp.x=p.x+sp*p.y-sp*piv.y;
+	ptemp.y=p.y+sp*p.x-sp*piv.x;
 	return ptemp;
 }
 
 void relocateTray() { // set a random position of the tray
-	int rvx, rvy,tvzoom, tvangle; //Random value
+	float arr[9]={0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9};
+	int rvx, rvy,tvzoom, tvangle,spl; //Random value
 	int min_x = 100, max_x = sw - 100, interval_x = 100, range_x = max_x - min_x + 1;
 	int min_y = 100, max_y = sh - 100, interval_y = 100, range_y = max_y - min_y + 1;
 
@@ -65,25 +71,40 @@ void relocateTray() { // set a random position of the tray
 	tvzoom = min_z + (rand() % range_z) / interval_z * interval_z;
 
 	int min_angle = 0, max_angle = 90, interval_angle = 30, range_angle = max_angle - min_angle;
+
+	int min_sl=0, max_sl=9, intervel_sl=1, range_sl=max_sl-min_sl;
+	spl=min_sl+(rand()%range_sl)/intervel_sl*intervel_sl;
 	tvangle = min_angle + (rand() % range_angle) / interval_angle * interval_angle;
 	tzoom = tvzoom; // set random scale factor of the tray; 
 	tang = tvangle;  // set random rotation angle of the tray;
+	sl=arr[spl];
 }
-
+float roundoff(float value, unsigned char prec)
+{
+  float pow_10 = pow(10.0f, (float)prec);
+  return round(value * pow_10) / pow_10;
+}
 void checkPos() { //check whether the tray and lid are overlapping
-	if ((tc.x == lc.x) && (tc.y == lc.y)&&(tzoom==lzoom)&&((tang==lang)||(tang==90-lang))) {
+	if ((tc.x == lc.x) && (tc.y == lc.y)&&(tzoom==lzoom)&&((tang==lang)&&(roundoff(sl,3)==roundoff(sp,3)))) {
 		score += 10;
 		relocateTray();
 	}
 }
 
-void drawSquare(Point2D center, int ang, int zoom) {
+
+
+void drawSquare(Point2D center, int ang, int zoom,float sp) {
 	Point2D p1, p2, p3, p4;
 
 	p1.x = center.x - 10; 	p1.y = center.y - 10;
 	p2.x = center.x - 10; 	p2.y = center.y + 10;
 	p3.x = center.x + 10; 	p3.y = center.y + 10;
 	p4.x = center.x + 10; 	p4.y = center.y - 10;
+	
+	p1 = Shearing(p1, center, sp);
+	p2 = Shearing(p2, center, sp);
+	p3 = Shearing(p3, center, sp);
+	p4 = Shearing(p4, center, sp);
 
 	//Rotate the points p1, p2, p3, and p4;
 	p1 = rotate_arb(p1, center, ang);
@@ -96,11 +117,9 @@ void drawSquare(Point2D center, int ang, int zoom) {
 	p3 = scale_arb(p3, center, zoom);
 	p4 = scale_arb(p4, center, zoom);
 
-
-
-	printf("tray angle =%d,  lid angle=%d\n", tang, lang);
-
-
+	//Scale the points p1, p2, p3, and p4;
+	
+	printf("tray angle =%d,  lid angle=%d, lid shearing =: %f, tray shearing =: %f, lid scale =:%d, tray scale :=%d, lid position(%f,%f), tray position(%f,%f) \n", tang, lang, sp, sl,lzoom, tzoom, lc.x,lc.y,tc.x,tc.y);
 	glBegin(GL_POLYGON);
 	glVertex2i(p1.x, p1.y);
 	glVertex2i(p2.x, p2.y);
@@ -144,12 +163,12 @@ void printScore() // You don't need to modify anything in this function
 
 void drawTray() {
 	glColor3f(1.0, 0.0, 0.0);
-	drawSquare(tc, tang, tzoom);
+	drawSquare(tc, tang, tzoom,sl);
 }
 
 void drawLid() {
 	glColor3f(1.0, 1.0, 0.0);
-	drawSquare(lc, lang, lzoom);
+	drawSquare(lc, lang, lzoom,sp);
 }
 
 void display() {
@@ -223,8 +242,18 @@ void keyboard(unsigned char key, int x, int y)
 		//bt we need same value for check overlapping
 		//so we have to use this if clause
 		break;
-	case 'q':
-		exit(EXIT_SUCCESS);
+	case 's':
+		if(sp<=0.9){
+			sp=sp+0.1;
+		}
+		
+		break;
+	case 'S':
+		if(sp>=0){
+		sp=sp-0.1;
+		}
+		
+		break;
 	case 'Q':
 		exit(EXIT_SUCCESS);
 	default: return;
@@ -275,6 +304,7 @@ void myinit() {
 	// Place the Lid
 	lc.x = 100;	lc.y = 100; //Lid's Center
 	lang = 0; lzoom = 1;   //Lid's angle, and scale factor
+	sp=0.1;
 
 	glutPostRedisplay();
 }

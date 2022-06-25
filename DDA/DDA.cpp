@@ -1,6 +1,14 @@
-#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cmath>
+#define GL_SILENCE_DEPRECATION
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 
+using namespace std;
 int ww = 600, wh = 400;
 int xi, yi, xf, yf;
 
